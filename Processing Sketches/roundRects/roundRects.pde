@@ -2,21 +2,19 @@ int cnt = 0;
 
 void setup() {
   size(200, 200);
-  frameRate(10);
+  frameRate(2);
 }
 
-void randrect(float rad) {
-  float ww = width;
-  float hh = height;
+void randrect(float rad) {  
   float r = random(180);
   stroke(r);
   fill(r);
-  float x = random(-ww, ww);
-  float y = random(-hh, hh);
-  float w = random(ww/8, ww/2);
-  float h = random(hh/8, hh/2);
+  float x = random(0, width);
+  float y = random(0, height);
+  float w = random(width/8, width/2);
+  float h = random(height/8, height/2);
   float a = random(PI);
-  float m = min(w, h);
+  float m = min(w, h) / 2;
   pushMatrix();
   translate(x, y);
   rotate(a);
@@ -26,15 +24,16 @@ void randrect(float rad) {
 
 void draw() {
   clear();
-  background(255);
+  background(random(0, 255));
   //float rad = random(1);
   int iter = cnt / 100;
   int r = cnt % 100;
   float rad = r / 100.0;
-  for (int i=0; i<50; i++) {
+  for (int i=0; i<random(2,25); i++) {
     randrect(rad);
   }
   String fname = String.format("img-r%02d-%03d.png", r, iter);
-  save(fname);
+  //save(fname);
   cnt++;
+  if (cnt > 10000) stop();
 }
