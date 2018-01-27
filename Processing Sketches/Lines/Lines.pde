@@ -19,7 +19,8 @@ Vector <Point> points = new Vector <Point>();
 
 void setup() {
   background(230);
-  size(3001, 3001);
+  strokeWeight(2);
+  size(7001, 7001);
   
   // TOP
   for (int i = 0; i < sidePoints - 1; i++) {
@@ -59,10 +60,11 @@ void draw() {
       int jx = points.get(j).x;
       int jy = points.get(j).y;
       
-      if (ix == boundary || ix == width - boundary) {
-        
-      }
-        line(ix, iy, jx, jy);
+      if (ix == boundary && jx == boundary) continue;
+      if (ix == width - boundary && jx == width - boundary) continue;
+      if (iy == boundary && jy == boundary) continue;
+      if (iy == width - boundary && jy == width - boundary) continue;
+      line(ix, iy, jx, jy);
     }
   }
   
