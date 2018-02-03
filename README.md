@@ -25,6 +25,7 @@ Change the location the data will be loaded from
     IMAGE_DIR = "E:\\Generative-Art-Research\\Images\\Messy Round Rects"
     
 The number and letters of the parameters are gathered from the first image the script reads, so it assumes uniformity of the images in the IMAGE_DIR.
+
 Change the output folder. The folder name is automatically created from these parameters:
 
     N_EPOCHS = 1
