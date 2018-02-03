@@ -23,11 +23,14 @@ The processing scripts in the repository could also just be run to generate the 
 Change the location the data will be loaded from
 
     IMAGE_DIR = "E:\\Generative-Art-Research\\Images\\Messy Round Rects"
-
+    
+The number and letters of the parameters are gathered from the first image the script reads, so it assumes uniformity of the images in the IMAGE_DIR.
 Change the output folder. The folder name is automatically created from these parameters:
 
     N_EPOCHS = 1
     RUN_ID = 302
+
+The PARAMETER_MAP variable is used to make one parameter equivalent to another. Just add another element to the dictionary to collapse two parameters. 
 
 ### Run the Python File
 The results are left in the previously mentioned folder.
