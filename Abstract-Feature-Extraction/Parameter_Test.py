@@ -7,20 +7,22 @@ import Parameter_Support
 IMAGE_DIR = "E:\\Generative-Art-Research\\Images\\Noise"
 
 
-N_EPOCHS = 300
-RUN_ID = 18
+N_EPOCHS = 85
+RUN_ID = 19
 MODEL_DIR = 'Run ' + str(RUN_ID) + ' Results ' + str(N_EPOCHS) + ' Epochs'
 
 TEST_NAME = os.path.basename(os.path.normpath(IMAGE_DIR))
 
 
-
+########################################################################################################################
 # RETRIEVE THE PREVIOUSLY TRAINED MODEL FOR THE GIVEN ID NUMBER AND EPOCHS
+########################################################################################################################
 model = load_model(os.path.join(MODEL_DIR, 'Model.h5'))
 
 
-
+########################################################################################################################
 # LOAD THE TEST DATA
+########################################################################################################################
 image_names = os.listdir(IMAGE_DIR)
 np.random.shuffle(image_names)
 n_names = len(image_names)
@@ -30,16 +32,18 @@ y = np.array([float(name[5:7]) for name in image_names]).astype(np.float32)
 y = y.reshape(y.shape[0], 1)
 
 
-
+########################################################################################################################
 # MAKE PREDICTIONS FOR THE LOADED TEST IMAGES WITH THE LOADED MODEL
-predictions = model.predict(x, batch_size=5)
+########################################################################################################################
+predictions = model.predict(x, batch_size=100)
 predictions_and_y = np.hstack((predictions, y))
-score = model.evaluate(x, y, batch_size=5)
+score = model.evaluate(x, y, batch_size=100)
 np.savetxt(os.path.join(MODEL_DIR, 'Test Predictions ' + TEST_NAME + ' Results.csv'), predictions_and_y, delimiter=',')
 
 
-
+########################################################################################################################
 # CREATE A PLOT OF THE RESULTS
+########################################################################################################################
 image_names = np.array(image_names)
 image_names = image_names.reshape(len(image_names), 1)
 indexes_sorted_by_y = predictions_and_y[:, 1].argsort()
