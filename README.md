@@ -49,3 +49,4 @@ The testing script is still being converted to use multiple parameters. The curr
 # TO DO
 - Create rounded rectangle images with no fill.
 - Iterate on the network. Will smaller convolution filters from the start work as well? Explore more hyper-parameters.
+- More... I will add to this list
