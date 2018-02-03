@@ -3,9 +3,6 @@
   <component name="AnalysisUIOptions">
     <option name="SCOPE_TYPE" value="3" />
   </component>
-  <component name="BookmarkManager">
-    <bookmark url="file://$PROJECT_DIR$/Parameter_Models.py" line="276" />
-  </component>
   <component name="ChangeListManager">
     <list default="true" id="67a729c9-3172-447a-aa5e-559c548509a3" name="Default" comment="" />
     <ignored path="$PROJECT_DIR$/venv/" />
@@ -33,8 +30,8 @@
       <file leaf-file-name="Parameters_Train.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/Parameters_Train.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="429">
-              <caret line="31" column="5" lean-forward="false" selection-start-line="31" selection-start-column="0" selection-end-line="31" selection-end-column="5" />
+            <state relative-caret-position="-1854">
+              <caret line="35" column="13" lean-forward="true" selection-start-line="35" selection-start-column="13" selection-end-line="35" selection-end-column="13" />
               <folding>
                 <element signature="e#0#12#0" expanded="true" />
               </folding>
@@ -45,7 +42,7 @@
       <file leaf-file-name="Parameter_Support.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/Parameter_Support.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="429">
+            <state relative-caret-position="486">
               <caret line="27" column="9" lean-forward="false" selection-start-line="27" selection-start-column="7" selection-end-line="27" selection-end-column="9" />
               <folding>
                 <element signature="e#0#21#0" expanded="true" />
@@ -57,8 +54,8 @@
       <file leaf-file-name="Parameter_Predict.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/Parameter_Predict.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="468">
-              <caret line="26" column="0" lean-forward="true" selection-start-line="26" selection-start-column="0" selection-end-line="26" selection-end-column="0" />
+            <state relative-caret-position="144">
+              <caret line="8" column="0" lean-forward="false" selection-start-line="8" selection-start-column="0" selection-end-line="10" selection-end-column="96" />
               <folding>
                 <element signature="e#0#35#0" expanded="true" />
               </folding>
@@ -69,8 +66,8 @@
       <file leaf-file-name="Parameter_Models.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/Parameter_Models.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1174">
-              <caret line="161" column="52" lean-forward="false" selection-start-line="161" selection-start-column="52" selection-end-line="161" selection-end-column="52" />
+            <state relative-caret-position="1192">
+              <caret line="274" column="16" lean-forward="false" selection-start-line="274" selection-start-column="16" selection-end-line="274" selection-end-column="16" />
               <folding>
                 <element signature="e#0#35#0" expanded="true" />
               </folding>
@@ -103,8 +100,8 @@
       <file leaf-file-name="Remove_Bad_Images.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/Remove_Bad_Images.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="36">
-              <caret line="2" column="0" lean-forward="true" selection-start-line="2" selection-start-column="0" selection-end-line="2" selection-end-column="0" />
+            <state relative-caret-position="198">
+              <caret line="11" column="51" lean-forward="true" selection-start-line="11" selection-start-column="51" selection-end-line="11" selection-end-column="51" />
               <folding>
                 <element signature="e#0#9#0" expanded="true" />
               </folding>
@@ -124,8 +121,8 @@
   <component name="FindInProjectRecents">
     <findStrings>
       <find>plot_re</find>
-      <find>except</find>
       <find>excep</find>
+      <find>except</find>
     </findStrings>
   </component>
   <component name="IdeDocumentHistory">
@@ -134,12 +131,12 @@
         <option value="$PROJECT_DIR$/Parameter_Predictor.py" />
         <option value="$PROJECT_DIR$/Parameter_Train.py" />
         <option value="$PROJECT_DIR$/Rename_Files.py" />
-        <option value="$PROJECT_DIR$/Parameter_Models.py" />
         <option value="$PROJECT_DIR$/Parameter_Support.py" />
         <option value="$PROJECT_DIR$/Parameter_Test.py" />
-        <option value="$PROJECT_DIR$/Parameters_Train.py" />
         <option value="$PROJECT_DIR$/Parameter_Predict.py" />
         <option value="$PROJECT_DIR$/Remove_Bad_Images.py" />
+        <option value="$PROJECT_DIR$/Parameters_Train.py" />
+        <option value="$PROJECT_DIR$/Parameter_Models.py" />
       </list>
     </option>
   </component>
@@ -664,10 +661,38 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Parameter_Test.py">
+    <entry file="file://C:/Program Files/Python36/Lib/site-packages/PIL/Image.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="810">
-          <caret line="45" column="120" lean-forward="false" selection-start-line="45" selection-start-column="120" selection-end-line="45" selection-end-column="120" />
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Parameters_Train.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-1854">
+          <caret line="35" column="13" lean-forward="true" selection-start-line="35" selection-start-column="13" selection-end-line="35" selection-end-column="13" />
+          <folding>
+            <element signature="e#0#12#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Parameter_Support.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="486">
+          <caret line="27" column="9" lean-forward="false" selection-start-line="27" selection-start-column="7" selection-end-line="27" selection-end-column="9" />
+          <folding>
+            <element signature="e#0#21#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Parameter_Predict.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="144">
+          <caret line="8" column="0" lean-forward="false" selection-start-line="8" selection-start-column="0" selection-end-line="10" selection-end-column="96" />
           <folding>
             <element signature="e#0#35#0" expanded="true" />
           </folding>
@@ -676,18 +701,18 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/Parameter_Models.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1174">
-          <caret line="161" column="52" lean-forward="false" selection-start-line="161" selection-start-column="52" selection-end-line="161" selection-end-column="52" />
+        <state relative-caret-position="1192">
+          <caret line="274" column="16" lean-forward="false" selection-start-line="274" selection-start-column="16" selection-end-line="274" selection-end-column="16" />
           <folding>
             <element signature="e#0#35#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Parameter_Predict.py">
+    <entry file="file://$PROJECT_DIR$/Parameter_Test.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="468">
-          <caret line="26" column="0" lean-forward="true" selection-start-line="26" selection-start-column="0" selection-end-line="26" selection-end-column="0" />
+        <state relative-caret-position="810">
+          <caret line="45" column="120" lean-forward="false" selection-start-line="45" selection-start-column="120" selection-end-line="45" selection-end-column="120" />
           <folding>
             <element signature="e#0#35#0" expanded="true" />
           </folding>
@@ -702,38 +727,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://C:/Program Files/Python36/Lib/site-packages/PIL/Image.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/Parameter_Support.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="429">
-          <caret line="27" column="9" lean-forward="false" selection-start-line="27" selection-start-column="7" selection-end-line="27" selection-end-column="9" />
-          <folding>
-            <element signature="e#0#21#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/Parameters_Train.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="429">
-          <caret line="31" column="5" lean-forward="false" selection-start-line="31" selection-start-column="0" selection-end-line="31" selection-end-column="5" />
-          <folding>
-            <element signature="e#0#12#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/Remove_Bad_Images.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="36">
-          <caret line="2" column="0" lean-forward="true" selection-start-line="2" selection-start-column="0" selection-end-line="2" selection-end-column="0" />
+        <state relative-caret-position="198">
+          <caret line="11" column="51" lean-forward="true" selection-start-line="11" selection-start-column="51" selection-end-line="11" selection-end-column="51" />
           <folding>
             <element signature="e#0#9#0" expanded="true" />
           </folding>

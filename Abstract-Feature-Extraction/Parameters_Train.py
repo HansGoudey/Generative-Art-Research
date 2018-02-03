@@ -11,10 +11,12 @@ import Parameter_Support
 IMAGE_DIR = "E:\\Generative-Art-Research\\Images\\Messy Round Rects"
 IMAGE_TYPES = ['mes', 'rdr', 'rns', 'rsc', 'img', 'rmr']  # Add a list of the first three identifier letters at the beginning of the image files to only train on those types
 
-PARAMETER_MAP = {'f':'r'}  # Dictionary mapping of equivalent parameters. {'f':'r'} means 'f' should be equivalent to 'r' for training
-
 N_EPOCHS = 1
 RUN_ID = 302
+
+PARAMETER_MAP = {'f':'r'}  # Dictionary mapping of equivalent parameters. {'f':'r'} means 'f' should be equivalent to 'r' for training
+
+
 
 MODEL_TO_LOAD = "Run 301 Results 200 Epochs"  # Add the name of the folder containing the model to load and start the training with  'Run 18 Results 300 Epochs'  #
 LOAD_PREVIOUS_MODEL = True
