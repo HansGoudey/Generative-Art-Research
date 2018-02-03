@@ -34,6 +34,8 @@ The results are left in the previously mentioned folder.
 
 ## How to Predict
 Use **Parameters_Predict.py**
+### Remove Junk Images
+Using a Firefox extension to download Google Images search results, I ended up with quite a few images that my script can't open. If the quality of the images is unknown, it would be worth it to run the **Remove_Bad_Images.py** script on the directory first.
 ### Change Prediction Run Data
 Change the directory of the image data, and the directory that the model will be loaded from. The model h5 file and the Parameters.pickle file which stores the parameters used for training that model should be stored in the model directory.
 
