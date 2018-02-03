@@ -14,6 +14,7 @@ Each parameter **-c##** is designated by a dash followed by a letter. *c* might 
 At the end is a string of numbers, **###**, used to keep multiple images with the same parameter values unique.
 
 If you generate more images, remember to add the **type** to the **IMAGE_TYPES** variable in the train file.
+
     IMAGE_TYPES = ['mes', 'rdr', 'rns', 'rsc', 'img', 'rmr']
 
 #### Download Link
