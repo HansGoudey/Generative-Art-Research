@@ -59,4 +59,8 @@ The testing script is still being converted to use multiple parameters. The curr
 # TO DO
 - Create rounded rectangle images with no fill.
 - Iterate on the network. Will smaller convolution filters from the start work as well? Explore more hyper-parameters.
+- Symmetry Parameter
+- Repetition Parameter
+- Blur Parameter
+- Try three parameters in one model.. four possibly?
 - More... I will add to this list
