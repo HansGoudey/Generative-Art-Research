@@ -8,6 +8,7 @@ import sys
 import argparse
 import ast
 from keras.models import load_model
+from keras.callbacks import EarlyStopping
 import Parameter_Models
 import Parameter_Support
 
@@ -80,6 +81,8 @@ Getting info on an existing ParameterModel Object that has been saved to a direc
 	model = ParameterModel(None, model_to_load)
 	model.get_info()
 """
+
+
 class ParameterModel:
 
 	model = None
@@ -151,7 +154,7 @@ class ParameterModel:
 	def retrieve_model(self, model_dir):
 		try:
 			self.model = load_model(os.path.join(model_dir, 'Model.h5'))
-		except (ImportError, ValueError) as e:
+		except (ImportError, ValueError):
 			sys.exit('Error importing model.h5 file.' + os.path.join(model_dir, 'Model.h5') + 'No such file, or incompatible')
 
 		with open(os.path.join(model_dir, 'Parameters.pickle'), 'rb') as parameters_file:
@@ -274,6 +277,7 @@ class ParameterModel:
 				summary_file.write('Valid image types: ')
 				for kind in image_types:
 					summary_file.write(kind + ', ')
+			summary_file.write('\n' + 'Trained for ' + str(self.trained_epochs) + ' epochs.')
 
 			summary_file.write('\n\n')
 
@@ -288,10 +292,18 @@ class ParameterModel:
 
 
 	def train(self, n_epochs):
-		history = self.model.fit(self.x_train, self.y_train, epochs=n_epochs, batch_size=self.batch_size)
+		# Trains on images that are already loaded into the object's instance variables
+		# If n_epochs is less than 1, the model will stop training when the model has not improved in the absolute value of that number os epochs
+
+		if n_epochs < 0:
+			converge_monitor = EarlyStopping(patience=abs(n_epochs))
+			history = self.model.fit(self.x_train, self.y_train, epochs=n_epochs, batch_size=self.batch_size, callbacks=[converge_monitor])
+		else:
+			history = self.model.fit(self.x_train, self.y_train, epochs=n_epochs, batch_size=self.batch_size)
 
 		self.train_predictions = self.model.predict(self.x_train, batch_size=self.batch_size)
 
+		self.trained_epochs = n_epochs 
 		return history
 
 
@@ -383,6 +395,11 @@ class ParameterModel:
 	def set_image_types(self, image_types):
 		self.trained_image_types = image_types
 
+
+def margin_metric(margin, x, y):
+	# Returns ratio of x that is within the provided margin of y
+	# x and y are numpy arrays. They can have multiple columns, one for each parameter
+	return ((x < y + margin) & (x > y - margin)).sum(axis=0)/x.shape[0]
 
 if __name__ == '__main__':
 	main()
