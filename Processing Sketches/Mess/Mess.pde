@@ -1,6 +1,6 @@
 int count = 0;
 final float mess = 4;
-final int iterations = 50;
+final int iterations = 20;
 
 void setup() {
   size(200, 200);
@@ -21,11 +21,11 @@ void draw() {
     for (int m = 0; m < 100; m++) {  // Each of the images
       //print(count + "\n");
       background(random(70, 240));
-      if (count >= 8000) {
+      if (count >= 2000) {
         print("Stopping at " + count + " images");
         stop();
       }
-      //count++;
+      count++;
       scale = 10 + 40 * (m/100);
       for(int i = 0; i < m * mess + 2; i++) {  // Each primitive drawm
         
@@ -83,6 +83,6 @@ void draw() {
       }
       save(String.format("Output/mes-m%02d-%03d.png", m, iteration));
     }
-    print("Iteration finished\n");
+    print(count);
   }
 }

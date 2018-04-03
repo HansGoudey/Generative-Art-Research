@@ -27,14 +27,13 @@ void draw() {
   clear();
   background(random(0, 255));
   //float rad = random(1);
-  int iter = cnt / 100;
   int r = cnt % 100;
   float rad = r / 100.0;
   for (int i=0; i<random(2,25); i++) {
     randrect(rad);
   }
-  String fname = String.format("Output/img-r%02d-%03d.png", r, iter);
+  String fname = String.format("Output/img-r%02d-%03d.png", r, cnt / 100);
   save(fname);
   cnt++;
-  if (cnt > 10000) stop();
+  if (cnt > 2000) stop();
 }

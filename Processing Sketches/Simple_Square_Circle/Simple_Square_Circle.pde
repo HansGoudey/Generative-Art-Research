@@ -30,8 +30,9 @@ void draw() {
     else ellipse(x, y, size, size2);
   }
   
-  String fname = String.format("img-r%02d-%03ds.png", roundness, count);
+  String fname = String.format("Simple Round Rects/img-r%02d-%03d.png", roundness, count);
   save(fname);
   count++;
-  if (count > 4000) stop();
+  if (count % 100 == 0) println(count);
+  if (count > 10000) stop();
 }

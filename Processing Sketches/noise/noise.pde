@@ -1,7 +1,8 @@
-final int ITERATIONS = 30;
+final int ITERATIONS = 20;
 final int ANT_ITERATIONS = 700;
 final int NUM_ANTS = 300;
 ArrayList<Ant> ants = new ArrayList<Ant>(NUM_ANTS);
+int count = 0;
 
 void setup() {
   size(200, 200);
@@ -19,6 +20,7 @@ void setup() {
 void draw() {
   for (int iteration = 0; iteration < ITERATIONS; iteration++) {
     for (int i = 0; i <= 100; i+=1) {
+      count++;
       background(0);
       noiseSeed(System.currentTimeMillis());
       noiseDetail(6, i/100.0 + .001); // we need the .001 to mkae sure this doesn't go to zero
@@ -27,9 +29,10 @@ void draw() {
           ant.draw(.012);
         }
       }
-      String fileName = String.format("samples/img-f%02d-%03d.png", 100 - i, iteration);
+      String fileName = String.format("Noise/img-f%02d-%03d.png", 100 - i, iteration);
       save(fileName);
-      println(String.format("%02.02f", (iteration*100 + i)/(100.0 * ITERATIONS)));
+      //println(String.format("%02.02f", (iteration*100 + i)/(100.0 * ITERATIONS)));
+      println(count);
     }
   }
 }

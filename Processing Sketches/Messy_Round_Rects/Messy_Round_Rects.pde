@@ -2,7 +2,7 @@ int cnt = 0;
 
 void setup() {
   size(200, 200);
-  frameRate(2);
+  frameRate(99999999);
 }
 
 void randrect(float rad) {  
@@ -23,8 +23,8 @@ void randrect(float rad) {
 }
 
 void draw() {
-  for (int round = 0; round < 100; round++) {
-    for (int messy = 0; messy < 100; messy++) {
+  for (int round = 0; round < 45; round++) {
+    for (int messy = 0; messy < 45; messy++) {
       clear();
       background(random(0, 255));
   

@@ -10,10 +10,40 @@ import ast
 from keras.models import load_model
 from keras.callbacks import EarlyStopping
 import Parameter_Models
-import Parameter_Support
+from PIL import Image
 
 
 def main():
+	"""
+	Contains the command line interface for the ParameterModel class
+
+	USAGE:
+
+	Creating a new model and training on it
+		model = ParameterModel(run_id, None)
+		model.train_operation(directory, epochs, image_types=image_types, parameter_map=parameter_map)
+
+	Training an existing model without duplicating/creating a new folder
+		model = ParameterModel(None, model_to_load)
+		model.train_operation(directory, epochs, image_types=image_types, parameter_map=parameter_map)
+
+	Training an existing model and creating a new folder for the changed model
+		model = ParameterModel(run_id, model_to_load)
+		model.train_operation(directory, epochs, image_types=image_types, parameter_map=parameter_map)
+
+	Testing an existing model on a data set
+		model = ParameterModel(run_id (optional), model_to_load)
+		model.test_op(directory, image_types=image_types, parameter_map=parameter_map)
+
+	Predicting values for a set of unlabeled images
+		model = ParameterModel(run_id (optional), model_to_load)
+		model.predict_op(directory)
+
+	Getting info on an existing ParameterModel Object that has been saved to a directory
+		model = ParameterModel(None, model_to_load)
+		model.get_info()
+	"""
+
 	parser = argparse.ArgumentParser()
 	parser.add_argument('operation', action='store', choices=['train', 'test', 'predict', 'info'], help='Which operation to do')
 	parser.add_argument('directory', action='store', help='The directory to load images from')
@@ -26,8 +56,7 @@ def main():
 	args = parser.parse_args()
 
 	if args.operation == 'train':
-		if args.run_id is None:  # The run will have a new folder created for it and it needs a new name
-			# TODO: Make this only happen when model_to_load isn't provided
+		if args.run_id is None and args.model_to_load is None:  # The run will have a new folder created for it and it needs a new name
 			args.run_id = args.operation + ' ' + str(args.n_epochs) + ' epochs ' + 'from ' + os.path.basename(os.path.normpath(args.directory))
 
 		model = ParameterModel(args.model_to_load, args.run_id)
@@ -47,40 +76,11 @@ def main():
 
 		model.test_operation(args.directory, args.image_types, ast.literal_eval(args.parameter_map), args.model_to_load)
 	elif args.operation == 'predict':
-		pass
+		model = 
 	elif args.operation == 'info':
 		pass
 
 	plt.show()
-
-
-"""
-HOW THE CLASS SHOULD BE USED:
-
-Creating a new model and training on it
-	model = ParameterModel(run_id, None)
-	model.train_operation(directory, epochs, image_types=image_types, parameter_map=parameter_map)
-	
-Training an existing model without duplicating/creating a new folder
-	model = ParameterModel(None, model_to_load)
-	model.train_operation(directory, epochs, image_types=image_types, parameter_map=parameter_map)
-	
-Training an existing model and creating a new folder for the changed model
-	model = ParameterModel(run_id, model_to_load)
-	model.train_operation(directory, epochs, image_types=image_types, parameter_map=parameter_map)
-	
-Testing an existing model on a data set
-	model = ParameterModel(run_id (optional), model_to_load)
-	model.test_op(directory, image_types=image_types, parameter_map=parameter_map)
-	
-Predicting values for a set of unlabeled images
-	model = ParameterModel(run_id (optional), model_to_load)
-	model.predict_op(directory)
-	
-Getting info on an existing ParameterModel Object that has been saved to a directory
-	model = ParameterModel(None, model_to_load)
-	model.get_info()
-"""
 
 
 class ParameterModel:
@@ -90,12 +90,15 @@ class ParameterModel:
 
 	trained_parameter_map = {}  # Dictionary mapping of equivalent parameters. {'f':'r'} means 'f' should be equivalent to 'r' for training
 	trained_image_types = []  # A list of the first three identifier letters at the beginning of the image files to only train on those types
-	trained_parameters = []
+	trained_parameters = None
 	n_trained_parameters = 1
 	loaded_model = None
-	trained_epochs = 0  # TODO: Output this in the model summary
+	trained_epochs = 0
+
+	test_margin = 10
 
 	batch_size = 300
+	image_dim = 0  # TODO: Add support for rectangular images
 
 	x_train = []
 	y_train = []
@@ -128,17 +131,19 @@ class ParameterModel:
 		self.load_train_and_test_data(image_dir, image_types, parameter_map)
 
 		if self.model is None:
+			print('Creating Model')
 			self.create_model(self.n_trained_parameters)  # n_trained_parameters will be filled because data loading happens just before
 
-		history = self.train(epochs)
+		history = self.train(epochs)  # Fills self.train_predictions
 		self.plot_loss_history(history)
-		test_score = self.test()
-		train_score = self.model.evaluate(self.x_train, self.y_train, batch_size=self.batch_size)
-		self.plot_against_y(self.train_predictions, self.y_train, 'Train Predictions vs Actual Values', train_score)
-		self.plot_against_y(self.test_predictions, self.y_test, 'Test Predictions vs Actual Values', test_score)
+		train_scores = margin_metric(self.test_margin, self.train_predictions, self.y_train)
+		test_scores = self.test()
+		print('Test Score: ', test_scores)
+		self.plot_against_y(self.train_predictions, self.y_train, 'Train Predictions vs Actual Values', train_scores)
+		self.plot_against_y(self.test_predictions, self.y_test, 'Test Predictions vs Actual Values', test_scores)
 
 		self.save_model_and_params()
-		self.save_training_description(image_dir, image_types, self.loaded_model)
+		self.save_training_description(image_dir)
 
 	def test_operation(self, image_dir, image_types, parameter_map, loaded_model):
 		# Assumes model has already been loaded when the ParameterObject object was created
@@ -147,8 +152,16 @@ class ParameterModel:
 		self.load_test_data(image_dir, image_types, parameter_map)
 		self.results_dir = loaded_model
 
-		test_score = self.test()
-		self.plot_against_y(self.test_predictions, self.y_test, os.path.basename(os.path.normpath(image_dir)) + ' Predictions vs Values', test_score)
+		test_scores = self.test()
+		print('Test Score: ', test_scores)
+		self.plot_against_y(self.test_predictions, self.y_test, os.path.basename(os.path.normpath(image_dir)) + ' Predictions vs Values', test_scores)
+
+	def predict_operation(self, image_dir, model_to_load):
+		# For making a set of predictions from unlabeled data
+
+
+		print('Loading Data')
+		self.load_only_x(image_dir)
 
 
 	def retrieve_model(self, model_dir):
@@ -169,7 +182,6 @@ class ParameterModel:
 
 	def make_results_directory(self, run_id):
 		results_dir = str(run_id) + ' Results'
-		print('Making directory', results_dir)
 		try:
 			os.makedirs(results_dir)
 		except OSError as exception:
@@ -180,7 +192,7 @@ class ParameterModel:
 
 
 	def load_train_and_test_data(self, image_dir, image_types, parameter_map):
-		x, y = self.load_data(image_dir, image_types, parameter_map)
+		x, y = self.load_data(image_dir, image_types, parameter_map, True)
 
 		test_split = int(x.shape[0] * 0.8)
 
@@ -188,12 +200,18 @@ class ParameterModel:
 		self.y_train, self.y_test = np.array_split(y, [test_split])
 
 	def load_test_data(self, image_dir, image_types, parameter_map):
-		x, y = self.load_data(image_dir, image_types, parameter_map)
+		x, y = self.load_data(image_dir, image_types, parameter_map, True)
 
 		self.x_test = x
 		self.y_test = y
 
-	def load_data(self, image_dir, image_types, parameter_map):
+	def load_only_x(self, image_dir):
+		# For loading unlabelled data.
+		x = self.load_data(image_dir, None, None, True)
+
+		self.x_test = x
+
+	def load_data(self, image_dir, image_types, parameter_map, load_y):  # TODO: Add support for loading images from multiple directories
 		"""
 		Gets x and y values for images with types matching values in image_types in the specified directory.
 		Maps parameters
@@ -202,20 +220,25 @@ class ParameterModel:
 			trained_parameters
 			n_trained_parameters
 			x_train, x_test, y_train, y_test
+			image_dim
 		"""
 
 		image_names = os.listdir(image_dir)
 		np.random.shuffle(image_names)
+
+		self.get_image_dim(image_names[1])
 
 		# Remove the images types that aren't wanted for training if some are specified with a list
 		if image_types is not None:
 			image_names = [name for name in image_names if any(kind in name for kind in image_types)]
 
 		n_names = len(image_names)
-		print(n_names, 'Images')
 
-		x = np.array([Parameter_Support.get_image(os.path.join(image_dir, name)) for name in image_names])
-		x = x.reshape((n_names, Parameter_Support.IMAGE_DIM, Parameter_Support.IMAGE_DIM, 1)).astype(np.float32)
+		x = np.array([self.get_image(os.path.join(image_dir, name)) for name in image_names])
+		x = x.reshape((n_names, self.image_dim, self.image_dim, 1)).astype(np.float32)
+
+		if not load_y:  # For unlabeled data, the function should return before it tries to gather labels
+			return x
 
 		n_image_parameters = image_names[0].count('-') - 1
 		y = np.ones(shape=(n_names, n_image_parameters), dtype=np.float32) * -100  # Initialize the array to the middle value in case some file names are missing data
@@ -223,7 +246,6 @@ class ParameterModel:
 		temp_image_names = list(image_names)  # Duplicate list so the original names aren't changed in case they need to be used
 
 		# Map the parameters in the parameter map dictionary
-		print('Parameter Map:', parameter_map)
 		for i in range(len(temp_image_names)):
 			for letter in parameter_map:
 				if '-' + letter in temp_image_names[i]:
@@ -233,7 +255,6 @@ class ParameterModel:
 		parameter_indexes = [m.start() + 1 for m in re.finditer('-', temp_image_names[0])][0:-1]  # Don't use the last '-' in the name. It's before the last number, not a parameter
 		self.trained_parameters = [temp_image_names[0][i] for i in parameter_indexes]  # Get the parameters from the first image. Assumes all images have consistent parameters
 		self.n_trained_parameters = len(self.trained_parameters)
-		print('parameter letters', self.trained_parameters)
 
 		# Build y values
 		for i_name in range(len(temp_image_names)):
@@ -257,29 +278,41 @@ class ParameterModel:
 		# 	if y[i, 0] == -100:
 		# 		print('Value not assigned, name:', temp_image_names[i])
 
+	def get_image_dim(self, image_path):
+		with Image.open(image_path) as image:
+			width, height = image.size
+		assert (width == height), 'Images should be square'
+		self.image_dim = width
+
+	def get_image(self, path):
+		with Image.open(path) as image:
+			image = np.array(image) / 255
+			return image[:, :, 0].reshape((self.image_dim, self.image_dim, 1)).astype(np.float32)
+
 
 	def create_model(self, n_parameters):
-		print('Creating Model')
-		self.model = Parameter_Models.more_conv_multiple(Parameter_Support.IMAGE_DIM, n_parameters)
+		self.model = Parameter_Models.more_conv_multiple(self.image_dim, n_parameters)
 
 
-	def save_training_description(self, image_dir, image_types, previous_model):
+	def save_training_description(self, image_dir):
 		with open(os.path.join(self.results_dir, 'Model Summary.txt'), 'w+') as summary_file:
-			summary_file.write('\nParameters: ')
+			summary_file.write('Parameters: ')
 			for letter in self.trained_parameters:
 				summary_file.write(letter + ', ')
-			summary_file.write('Trained from ' + image_dir + '\n')
-			if previous_model:
-				summary_file.write('Loaded from previously trained model in ' + previous_model + '\n')
-			if image_types is None:
+			summary_file.write('\n' + 'Trained from ' + image_dir + '\n')
+			if self.loaded_model:
+				summary_file.write('Loaded from previously trained model in ' + self.loaded_model + '\n')
+			if self.trained_image_types is None:
 				summary_file.write('Trained on all image types')
 			else:
 				summary_file.write('Valid image types: ')
-				for kind in image_types:
+				for kind in self.trained_image_types:
 					summary_file.write(kind + ', ')
-			summary_file.write('\n' + 'Trained for ' + str(self.trained_epochs) + ' epochs.')
+			summary_file.write('\n' + 'Trained for ' + str(self.trained_epochs) + ' epochs.' + '\n')
+			summary_file.write('Tested with a margin of ' + str(self.test_margin) + ' points.' + '\n')
+			summary_file.write('Images had dimension ' + str(self.image_dim) + ' pixels, square.' + '\n')
 
-			summary_file.write('\n\n')
+			summary_file.write('\n')
 
 			self.model.summary(print_fn=lambda x: summary_file.write(x + '\n'))
 
@@ -302,21 +335,10 @@ class ParameterModel:
 			history = self.model.fit(self.x_train, self.y_train, epochs=n_epochs, batch_size=self.batch_size)
 
 		self.train_predictions = self.model.predict(self.x_train, batch_size=self.batch_size)
+		np.clip(self.train_predictions, 0, 100, out=self.train_predictions)
 
-		self.trained_epochs = n_epochs 
+		self.trained_epochs = n_epochs
 		return history
-
-
-	# def evaluate_against_y(self):
-	# 	train_predictions_and_y = np.hstack((self.train_predictions, self.y_train))
-	# 	print('train predictions and y shape', train_predictions_and_y.shape)
-	#
-	# 	np.savetxt(os.path.join(self.results_dir, 'Train Results.csv'), train_predictions_and_y, delimiter=',', header=(','.join(self.trained_parameters) + ',') * 2)
-	#
-	# 	train_score = self.model.evaluate(self.x_train, self.y_train, batch_size=self.batch_size)
-	# 	print('Train Score: ', train_score)
-	#
-	# 	return train_score
 
 
 	def plot_loss_history(self, history):
@@ -348,13 +370,11 @@ class ParameterModel:
 
 	def test(self):
 		self.test_predictions = self.model.predict(self.x_test, batch_size=self.batch_size)
-		test_predictions_and_y = np.hstack((self.test_predictions, self.y_test))
+		np.clip(self.test_predictions, 0, 100, out=self.test_predictions)
 
-		np.savetxt(os.path.join(self.results_dir, 'Test Results.csv'), test_predictions_and_y, delimiter=',', header=(','.join(self.trained_parameters) + ',') * 2)
+		np.savetxt(os.path.join(self.results_dir, 'Test Results.csv'), np.hstack((self.test_predictions, self.y_test)), delimiter=',', header=(','.join(self.trained_parameters) + ',') * 2)
 
-		test_scores = self.model.evaluate(self.x_test, self.y_test, batch_size=self.batch_size)
-
-		print('Test Score: ', test_scores)
+		test_scores = margin_metric(self.test_margin, self.test_predictions, self.y_test)
 
 		return test_scores
 
@@ -366,20 +386,20 @@ class ParameterModel:
 			n_train = predictions.shape[0]
 
 			predictions = predictions.reshape(n_train, 2)
-			Parameter_Support.plot_results(subplots[i], predictions, self.trained_parameters[i])  # TODO
+			plot_results(subplots[i], predictions, self.trained_parameters[i], title)  # TODO Fix this, a new function probably needed
 
 	def plot_against_y(self, predictions, y, title, score):
 		train_figure, subplots = plt.subplots(1, self.n_trained_parameters, figsize=(6 * self.n_trained_parameters, 6))  # Create a subplot for each parameter
 
 		predictions_and_y = np.hstack((predictions, y))
 		if self.n_trained_parameters == 1:
-			Parameter_Support.plot_results(subplots, predictions_and_y, score, self.trained_parameters)
+			plot_results(subplots, predictions_and_y, score, self.trained_parameters)
 		else:
 			for i in range(self.n_trained_parameters):
 				n_train = predictions_and_y.shape[0]
 				parameter_predictions_and_y = np.hstack((predictions_and_y[:, i].reshape(n_train, 1), predictions_and_y[:, self.n_trained_parameters + i].reshape(n_train, 1)))
 				parameter_predictions_and_y = parameter_predictions_and_y.reshape(n_train, 2)
-				Parameter_Support.plot_results(subplots[i], parameter_predictions_and_y, score[i], self.trained_parameters[i])
+				plot_results(subplots[i], parameter_predictions_and_y, score[i], self.trained_parameters[i])
 
 		train_figure.canvas.set_window_title(title)
 		train_figure.legend()
@@ -395,13 +415,30 @@ class ParameterModel:
 	def set_image_types(self, image_types):
 		self.trained_image_types = image_types
 
+	def set_margin(self, margin):
+		self.test_margin = margin
+
 
 def margin_metric(margin, x, y):
 	# Returns ratio of x that is within the provided margin of y
 	# x and y are numpy arrays. They can have multiple columns, one for each parameter
 	return ((x < y + margin) & (x > y - margin)).sum(axis=0)/x.shape[0]
 
+
+def plot_results(plot, predictions_and_y, score, parameter, image_names=None):
+	x = np.array(range(1, predictions_and_y.shape[0] + 1)).reshape((predictions_and_y.shape[0], 1))
+
+	# Sort the predictions and y values by the y values
+	indexes_sorted_by_y = predictions_and_y[:, 1].argsort()
+	predictions_and_y = predictions_and_y[indexes_sorted_by_y]
+
+	plot.scatter(x, predictions_and_y[:, 0], label='Predicted', color='firebrick', s=10)
+	plot.scatter(x, predictions_and_y[:, 1], label='Actual', color='steelblue', s=10)
+	plot.set_title('Score: ' + str(score))
+	plot.set_xlabel('Index')
+	plot.set_ylabel(parameter)
+	plot.grid()
+
+
 if __name__ == '__main__':
 	main()
-
-
