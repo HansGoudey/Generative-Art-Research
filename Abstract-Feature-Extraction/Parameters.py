@@ -17,31 +17,6 @@ def main():
 	"""
 	Contains the command line interface for the ParameterModel class
 
-	USAGE:
-
-	Creating a new model and training on it
-		model = ParameterModel(run_id, None)
-		model.train_operation(directory, epochs, image_types=image_types, parameter_map=parameter_map)
-
-	Training an existing model without duplicating/creating a new folder
-		model = ParameterModel(None, model_to_load)
-		model.train_operation(directory, epochs, image_types=image_types, parameter_map=parameter_map)
-
-	Training an existing model and creating a new folder for the changed model
-		model = ParameterModel(run_id, model_to_load)
-		model.train_operation(directory, epochs, image_types=image_types, parameter_map=parameter_map)
-
-	Testing an existing model on a data set
-		model = ParameterModel(run_id (optional), model_to_load)
-		model.test_op(directory, image_types=image_types, parameter_map=parameter_map)
-
-	Predicting values for a set of unlabeled images
-		model = ParameterModel(run_id (optional), model_to_load)
-		model.predict_op(directory)
-
-	Getting info on an existing ParameterModel Object that has been saved to a directory
-		model = ParameterModel(None, model_to_load)
-		model.get_info()
 	"""
 
 	parser = argparse.ArgumentParser()
@@ -76,7 +51,7 @@ def main():
 
 		model.test_operation(args.directory, args.image_types, ast.literal_eval(args.parameter_map), args.model_to_load)
 	elif args.operation == 'predict':
-		model = 
+		model = ParameterModel(args.model_to_load, args.run_id)
 	elif args.operation == 'info':
 		pass
 
@@ -84,6 +59,31 @@ def main():
 
 
 class ParameterModel:
+	"""
+	Creating a new model and training on it
+		model = ParameterModel(run_id, None)
+		model.train_operation(directory, epochs, image_types=image_types, parameter_map=parameter_map)
+
+	Training an existing model without duplicating/creating a new folder
+		model = ParameterModel(None, model_to_load)
+		model.train_operation(directory, epochs, image_types=image_types, parameter_map=parameter_map)
+
+	Training an existing model and creating a new folder for the changed model
+		model = ParameterModel(run_id, model_to_load)
+		model.train_operation(directory, epochs, image_types=image_types, parameter_map=parameter_map)
+
+	Testing an existing model on a data set
+		model = ParameterModel(run_id (optional), model_to_load)
+		model.test_op(directory, image_types=image_types, parameter_map=parameter_map)
+
+	Predicting values for a set of unlabeled images
+		model = ParameterModel(run_id (optional), model_to_load)
+		model.predict_op(directory)
+
+	Getting info on an existing ParameterModel Object that has been saved to a directory
+		model = ParameterModel(None, model_to_load)
+		model.get_info()
+	"""
 
 	model = None
 	results_dir = ''
