@@ -226,7 +226,7 @@ class ParameterModel:
 		image_names = os.listdir(image_dir)
 		np.random.shuffle(image_names)
 
-		self.get_image_dim(image_names[1])
+		self.get_image_dim(os.path.join(image_dir, image_names[1]))
 
 		# Remove the images types that aren't wanted for training if some are specified with a list
 		if image_types is not None:
