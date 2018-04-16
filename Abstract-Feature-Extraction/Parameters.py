@@ -16,12 +16,11 @@ from PIL import Image
 def main():
 	"""
 	Contains the command line interface for the ParameterModel class
-
 	"""
 
 	parser = argparse.ArgumentParser()
 	parser.add_argument('operation', action='store', choices=['train', 'test', 'predict', 'info'], help='Which operation to do')
-	parser.add_argument('directory', action='store', help='The directory to load images from')
+	parser.add_argument('directories', action='store', help='The directories to load images from')
 	parser.add_argument('-l', '--model_to_load', action='store', dest='model_to_load', help='Previous model to load and use for training or predictions', default=None)
 	parser.add_argument('-t', '--image_types', action='store', dest='image_types', help='Types (first 3 letters of file names) of images to train on. String of characters with no spaces', default=None)
 	parser.add_argument('-n', '--run_id', action='store', dest='run_id', help='Name for operation. Supplying a name will create a new results folder with that name', default=None)
@@ -32,14 +31,14 @@ def main():
 
 	if args.operation == 'train':
 		if args.run_id is None and args.model_to_load is None:  # The run will have a new folder created for it and it needs a new name
-			args.run_id = args.operation + ' ' + str(args.n_epochs) + ' epochs ' + 'from ' + os.path.basename(os.path.normpath(args.directory))
+			args.run_id = args.operation + ' ' + str(args.n_epochs) + ' epochs ' + 'from ' + os.path.basename(os.path.normpath(args.directories[0]))
 
 		model = ParameterModel(args.model_to_load, args.run_id)
 
 		if hasattr(args, 'image_types'):
 			model.set_image_types(args.image_types)
 
-		model.train_operation(args.directory, args.n_epochs, args.image_types, ast.literal_eval(args.parameter_map))
+		model.train_operation(ast.literal_eval(args.directories), args.n_epochs, args.image_types, ast.literal_eval(args.parameter_map))
 
 	elif args.operation == 'test':
 		print('Test Operation')
@@ -49,7 +48,7 @@ def main():
 		print('MODEL TO LOAD', args.model_to_load)
 		model = ParameterModel(args.model_to_load, args.run_id)
 
-		model.test_operation(args.directory, args.image_types, ast.literal_eval(args.parameter_map), args.model_to_load)
+		model.test_operation(args.directories, args.image_types, ast.literal_eval(args.parameter_map), args.model_to_load)
 	elif args.operation == 'predict':
 		model = ParameterModel(args.model_to_load, args.run_id)
 	elif args.operation == 'info':
@@ -62,25 +61,25 @@ class ParameterModel:
 	"""
 	Creating a new model and training on it
 		model = ParameterModel(run_id, None)
-		model.train_operation(directory, epochs, image_types=image_types, parameter_map=parameter_map)
+		model.train_operation(directories, epochs, image_types=image_types, parameter_map=parameter_map)
 
 	Training an existing model without duplicating/creating a new folder
 		model = ParameterModel(None, model_to_load)
-		model.train_operation(directory, epochs, image_types=image_types, parameter_map=parameter_map)
+		model.train_operation(directories, epochs, image_types=image_types, parameter_map=parameter_map)
 
 	Training an existing model and creating a new folder for the changed model
 		model = ParameterModel(run_id, model_to_load)
-		model.train_operation(directory, epochs, image_types=image_types, parameter_map=parameter_map)
+		model.train_operation(directories, epochs, image_types=image_types, parameter_map=parameter_map)
 
 	Testing an existing model on a data set
 		model = ParameterModel(run_id (optional), model_to_load)
-		model.test_op(directory, image_types=image_types, parameter_map=parameter_map)
+		model.test_op(directories, image_types=image_types, parameter_map=parameter_map)
 
 	Predicting values for a set of unlabeled images
 		model = ParameterModel(run_id (optional), model_to_load)
-		model.predict_op(directory)
+		model.predict_op(directories)
 
-	Getting info on an existing ParameterModel Object that has been saved to a directory
+	Getting info on an existing ParameterModel Object that has been saved to a directories
 		model = ParameterModel(None, model_to_load)
 		model.get_info()
 	"""
@@ -124,11 +123,11 @@ class ParameterModel:
 			print('Results in directory:', self.results_dir)
 
 
-	def train_operation(self, image_dir, epochs, image_types, parameter_map):
+	def train_operation(self, image_dirs, epochs, image_types, parameter_map):
 		# Loads and trains on data and saves/shows result data and plots
 
 		print('Loading Data')
-		self.load_train_and_test_data(image_dir, image_types, parameter_map)
+		self.load_train_and_test_data(image_dirs, image_types, parameter_map)
 
 		if self.model is None:
 			print('Creating Model')
@@ -143,25 +142,25 @@ class ParameterModel:
 		self.plot_against_y(self.test_predictions, self.y_test, 'Test Predictions vs Actual Values', test_scores)
 
 		self.save_model_and_params()
-		self.save_training_description(image_dir)
+		self.save_training_description(image_dirs)
 
-	def test_operation(self, image_dir, image_types, parameter_map, loaded_model):
+	def test_operation(self, image_dirs, image_types, parameter_map, loaded_model):
 		# Assumes model has already been loaded when the ParameterObject object was created
 
 		print('Loading Data')
-		self.load_test_data(image_dir, image_types, parameter_map)
+		self.load_test_data(image_dirs, image_types, parameter_map)
 		self.results_dir = loaded_model
 
 		test_scores = self.test()
 		print('Test Score: ', test_scores)
 		self.plot_against_y(self.test_predictions, self.y_test, os.path.basename(os.path.normpath(image_dir)) + ' Predictions vs Values', test_scores)
 
-	def predict_operation(self, image_dir, model_to_load):
+	def predict_operation(self, image_dirs, model_to_load):
 		# For making a set of predictions from unlabeled data
 
 
 		print('Loading Data')
-		self.load_only_x(image_dir)
+		self.load_only_x(image_dirs)
 
 
 	def retrieve_model(self, model_dir):
@@ -191,29 +190,29 @@ class ParameterModel:
 		self.results_dir = results_dir
 
 
-	def load_train_and_test_data(self, image_dir, image_types, parameter_map):
-		x, y = self.load_data(image_dir, image_types, parameter_map, True)
+	def load_train_and_test_data(self, image_dirs, image_types, parameter_map):
+		x, y = self.load_data(image_dirs, image_types, parameter_map, True)
 
 		test_split = int(x.shape[0] * 0.8)
 
 		self.x_train, self.x_test = np.array_split(x, [test_split])
 		self.y_train, self.y_test = np.array_split(y, [test_split])
 
-	def load_test_data(self, image_dir, image_types, parameter_map):
-		x, y = self.load_data(image_dir, image_types, parameter_map, True)
+	def load_test_data(self, image_dirs, image_types, parameter_map):
+		x, y = self.load_data(image_dirs, image_types, parameter_map, True)
 
 		self.x_test = x
 		self.y_test = y
 
-	def load_only_x(self, image_dir):
+	def load_only_x(self, image_dirs):
 		# For loading unlabelled data.
-		x = self.load_data(image_dir, None, None, True)
+		x = self.load_data(image_dirs, None, None, True)
 
 		self.x_test = x
 
-	def load_data(self, image_dir, image_types, parameter_map, load_y):  # TODO: Add support for loading images from multiple directories
+	def load_data(self, image_dirs, image_types, parameter_map, load_y):  # TODO: Add support for loading images from multiple directories
 		"""
-		Gets x and y values for images with types matching values in image_types in the specified directory.
+		Gets x and y values for images with types matching values in image_types in the specified directories.
 		Maps parameters
 
 		Fills the following instance variables:
@@ -222,11 +221,14 @@ class ParameterModel:
 			x_train, x_test, y_train, y_test
 			image_dim
 		"""
-
-		image_names = os.listdir(image_dir)
+		# Each image name should be the combination of its immediate folder and the file name of the image
+		image_names = []
+		for image_dir in image_dirs:  # Get image names from all provided directories
+			image_names += [os.path.join(os.path.basename(os.path.dirname(image_dir)), name) for name in os.listdir(image_dir)]  # Add the name of the folder the image is from to every image name
 		np.random.shuffle(image_names)
-
-		self.get_image_dim(os.path.join(image_dir, image_names[1]))
+		
+		image_dir_dir = os.path.dirname(os.path.dirname(image_dirs[0]))  # The directory that holds all of the image directories. This assumes all of the directories live in a common folder.
+		self.get_image_dim(os.path.join(image_dir_dir, image_names[1]))
 
 		# Remove the images types that aren't wanted for training if some are specified with a list
 		if image_types is not None:
@@ -234,7 +236,7 @@ class ParameterModel:
 
 		n_names = len(image_names)
 
-		x = np.array([self.get_image(os.path.join(image_dir, name)) for name in image_names])
+		x = np.array([self.get_image(os.path.join(image_dir_dir, name)) for name in image_names])
 		x = x.reshape((n_names, self.image_dim, self.image_dim, 1)).astype(np.float32)
 
 		if not load_y:  # For unlabeled data, the function should return before it tries to gather labels
@@ -294,12 +296,15 @@ class ParameterModel:
 		self.model = Parameter_Models.more_conv_multiple(self.image_dim, n_parameters)
 
 
-	def save_training_description(self, image_dir):
+	def save_training_description(self, image_dirs):
 		with open(os.path.join(self.results_dir, 'Model Summary.txt'), 'w+') as summary_file:
 			summary_file.write('Parameters: ')
 			for letter in self.trained_parameters:
 				summary_file.write(letter + ', ')
-			summary_file.write('\n' + 'Trained from ' + image_dir + '\n')
+			summary_file.write('\n' + 'Trained from ')
+			for image_dir in image_dirs:
+				summary_file.write(image_dir + ', ')
+			summary_file.write('\n')
 			if self.loaded_model:
 				summary_file.write('Loaded from previously trained model in ' + self.loaded_model + '\n')
 			if self.trained_image_types is None:
