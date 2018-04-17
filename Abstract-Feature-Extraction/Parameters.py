@@ -38,7 +38,7 @@ def main():
 
 		if hasattr(args, 'image_types'):
 			model.set_image_types(args.image_types)
-
+		print('Directories to load from:', ast.literal_eval(args.directories))
 		model.train_operation(ast.literal_eval(args.directories), args.n_epochs, args.image_types, ast.literal_eval(args.parameter_map))
 
 	elif args.operation == 'test':
@@ -49,7 +49,7 @@ def main():
 		print('MODEL TO LOAD', args.model_to_load)
 		model = ParameterModel(args.model_to_load, args.run_id)
 
-		model.test_operation(args.directories, args.image_types, ast.literal_eval(args.parameter_map), args.model_to_load)
+		model.test_operation(ast.literal_eval(args.directories), args.image_types, ast.literal_eval(args.parameter_map), args.model_to_load)
 	elif args.operation == 'predict':
 		model = ParameterModel(args.model_to_load, args.run_id)
 	elif args.operation == 'info':
@@ -154,7 +154,7 @@ class ParameterModel:
 
 		test_scores = self.test()
 		print('Test Score: ', test_scores)
-		self.plot_against_y(self.test_predictions, self.y_test, os.path.basename(os.path.normpath(image_dir)) + ' Predictions vs Values', test_scores)
+		self.plot_against_y(self.test_predictions, self.y_test, ', '.join([os.path.basename(os.path.dirname(image_dir)) for image_dir in image_dirs]) + ' Predictions vs Values', test_scores)
 
 	def predict_operation(self, image_dirs, model_to_load):
 		# For making a set of predictions from unlabeled data
@@ -271,15 +271,12 @@ class ParameterModel:
 				value = temp_image_names[i_name][index_in_name + 2:index_in_name + 4]
 				y[i_name, i_letter] = value
 
+		# # FIND IMAGE NAMES THAT AREN'T GIVING VALUES
+		for i in range(len(temp_image_names)):
+			if y[i, 0] == -100:
+				print('Value not assigned, name:', temp_image_names[i])
 		return x, y
 
-		# self.x_train, self.x_test = np.array_split(x, [test_split])
-		# self.y_train, self.y_test = np.array_split(y, [test_split])
-		#
-		# # FIND IMAGE NAMES THAT AREN'T GIVING VALUES
-		# for i in range(len(temp_image_names)):
-		# 	if y[i, 0] == -100:
-		# 		print('Value not assigned, name:', temp_image_names[i])
 
 	def get_image_dim(self, image_path):
 		with Image.open(image_path) as image:
@@ -322,7 +319,7 @@ class ParameterModel:
 
 			self.model.summary(print_fn=lambda x: summary_file.write(x + '\n'))
 			
-			plot_model(self.model, to_file=os.path.join(self.results_dir, 'Model Plot.png'), show_shapes=True, show_layer_names=True)
+			# plot_model(self.model, to_file=os.path.join(self.results_dir, 'Model Plot.png'), show_shapes=True, show_layer_names=True)
 
 	def save_model_and_params(self):
 		self.model.save(os.path.join(self.results_dir, 'Model.h5'))
@@ -330,7 +327,6 @@ class ParameterModel:
 		to_save = {'results_dir': self.results_dir, 'parameter_map': self.trained_parameter_map, 'image_types': self.trained_image_types, 'trained_parameters': self.trained_parameters, 'batch_size': self.batch_size}
 		with open(os.path.join(self.results_dir, 'Parameters.pickle'), 'wb') as parameter_file:
 			pickle.dump(to_save, parameter_file)
-
 
 	def train(self, n_epochs):
 		# Trains on images that are already loaded into the object's instance variables
