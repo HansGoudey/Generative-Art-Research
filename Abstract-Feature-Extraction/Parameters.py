@@ -322,7 +322,7 @@ class ParameterModel:
 
 			self.model.summary(print_fn=lambda x: summary_file.write(x + '\n'))
 			
-			plot_model(self.model, to_file=os.path.join(seld.results_dir, 'Model Plot.png'), show_shapes=True, show_layer_names=True)
+			plot_model(self.model, to_file=os.path.join(self.results_dir, 'Model Plot.png'), show_shapes=True, show_layer_names=True)
 
 	def save_model_and_params(self):
 		self.model.save(os.path.join(self.results_dir, 'Model.h5'))
