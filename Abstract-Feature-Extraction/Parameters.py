@@ -9,6 +9,7 @@ import argparse
 import ast
 from keras.models import load_model
 from keras.callbacks import EarlyStopping
+from keras.utils.vis_utils import plot_model
 import Parameter_Models
 from PIL import Image
 
@@ -320,6 +321,8 @@ class ParameterModel:
 			summary_file.write('\n')
 
 			self.model.summary(print_fn=lambda x: summary_file.write(x + '\n'))
+			
+			plot_model(self.model, to_file=os.path.join(seld.results_dir, 'Model Plot.png'), show_shapes=True, show_layer_names=True)
 
 	def save_model_and_params(self):
 		self.model.save(os.path.join(self.results_dir, 'Model.h5'))
