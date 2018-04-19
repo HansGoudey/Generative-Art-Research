@@ -166,6 +166,7 @@ class ParameterModel:
 
 	def retrieve_model(self, model_dir):
 		try:
+			print('Loading model from:', os.path.abspath(os.path.join(model_dir, 'Model.h5')))
 			self.model = load_model(os.path.join(model_dir, 'Model.h5'))
 		except (ImportError, ValueError):
 			sys.exit('Error importing model.h5 file.' + os.path.join(model_dir, 'Model.h5') + 'No such file, or incompatible')
@@ -272,9 +273,9 @@ class ParameterModel:
 				y[i_name, i_letter] = value
 
 		# # FIND IMAGE NAMES THAT AREN'T GIVING VALUES
-		for i in range(len(temp_image_names)):
-			if y[i, 0] == -100:
-				print('Value not assigned, name:', temp_image_names[i])
+		# for i in range(len(temp_image_names)):
+		# 	if y[i, 0] == -100:
+		#		print('Value not assigned, name:', temp_image_names[i])
 		return x, y
 
 
@@ -379,6 +380,7 @@ class ParameterModel:
 		np.savetxt(os.path.join(self.results_dir, 'Test Results.csv'), np.hstack((self.test_predictions, self.y_test)), delimiter=',', header=(','.join(self.trained_parameters) + ',') * 2)
 
 		test_scores = margin_metric(self.test_margin, self.test_predictions, self.y_test)
+		print('Loss is:', self.model.evaluate(self.x_test, self.y_test, batch_size=self.batch_size))
 
 		return test_scores
 
