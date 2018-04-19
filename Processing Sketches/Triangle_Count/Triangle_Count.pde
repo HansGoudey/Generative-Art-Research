@@ -1,10 +1,7 @@
-final int ITERATIONS = 100;
+final int ITERATIONS = 20;
 
-final float MIN_DISTANCE = 4;
-final float MIN_DIAMETER = 10;
-final float MAX_DIAMETER = 50;
-
-
+float MAX_DIAMETER = 50;
+float MIN_DIAMETER = 25;
 
 void setup() {
   size(200, 200); 
@@ -16,77 +13,26 @@ void setup() {
 
 void draw() {
   for (int iteration = 0; iteration < ITERATIONS; iteration++) {
-    for (int numCircles = 1; numCircles <= 100; numCircles+=1) {
-      ArrayList<Triangle> triangles = createTriangles(numCircles);
+    for (int nTriangles = 1; nTriangles <= 100; nTriangles++) {
       background(random(0, 255));
-      drawTriangles(triangles);
-      String fileName = String.format("Triangle Count/nms-n%02d-%03d.png", numCircles, iteration);
-      save(fileName);
-      println(String.format("%02.02f", (iteration*100 + numCircles)/(100.0 * ITERATIONS)));
-    }
-  }
-}
-
-
-ArrayList<Triangle> createTriangles(int count) {
-  ArrayList<Triangle> triangles = new ArrayList<Triangle>(count);
-  while (triangles.size() < count) {
-    Triangle c = new Triangle(); 
-    boolean match = false;
-    for (Triangle c2 : triangles) {
-      float distance = c.distanceFrom(c2);
-      if (distance < MIN_DISTANCE) {
-        match = true;
-        break;
-      } else {
-        c.addNeighbor(distance);
-        c2.addNeighbor(distance);
+      
+      for (int triangle = 0; triangle <= nTriangles; triangle++) {
+        //println();
+        //println(float(nTriangles) / 100.0);
+        //println(lerp(MIN_DIAMETER, MAX_DIAMETER, nTriangles / 100));
+        float diameter = random(0.5, 1.5) * lerp(MAX_DIAMETER, MIN_DIAMETER, float(nTriangles) / 100.0);
+        pushMatrix();
+        rotate(random(0, 2*PI));
+        float x = random(20, width - 20);
+        float y = random(20, height - 20);
+        fill(random(0, 255));
+        triangle(x, y, x + diameter, y, x + diameter, y + diameter);
+        popMatrix();
       }
+      
+      String fileName = String.format("Triangle Count/nms-n%02d-%03d.png", nTriangles, iteration);
+      save(fileName);
     }
-    if (! match) {
-      triangles.add(c);
-    }
-  }
-
-  return triangles;
-}
-
-
-void drawTriangles(ArrayList<Triangle> circles) {
-  for (Triangle c : circles) {
-
-    float fillColor;
-    do {
-      fillColor = random(0, 255);
-    } while (abs(brightness(g.backgroundColor) - fillColor) < 10);
-    fill(fillColor);
-
-    float diameter = random(MIN_DIAMETER, c.maxRadius*2);
-    pushMatrix();
-    rotate(random(0, 2*PI));
-    triangle(c.x, c.y, c.x + diameter, c.y, c.x + diameter, c.y + diameter);
-    popMatrix();
-  }
-}
-
-
-class Triangle {
-  float x;
-  float y;
-  float maxRadius = MAX_DIAMETER;
-
-  Triangle() {
-    x = random(0, width);
-    y = random(0, height);
-  }
-
-
-  float distanceFrom(Triangle c) {
-    return sqrt((c.x - x) * (c.x - x) + (c.y - y) * (c.y - y));
-  }
-
-
-  void addNeighbor(float distance) {
-    maxRadius = min(maxRadius, distance);
+    println(iteration + 1);
   }
 }
