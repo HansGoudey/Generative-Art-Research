@@ -1,8 +1,8 @@
 int cnt = 0;
 
 void setup() {
-  size(200, 200);
-  frameRate(2);
+  size(224, 224);
+  //frameRate(2);
 }
 
 void randrect(float rad) {  
@@ -32,8 +32,8 @@ void draw() {
   for (int i=0; i<random(2,25); i++) {
     randrect(rad);
   }
-  String fname = String.format("img-r%02d-%03d.png", r, iter);
-  //save(fname);
+  String fname = String.format("RoundRects224/rdr-r%02d-%03d.png", r, iter);
+  save(fname);
   cnt++;
   if (cnt > 10000) stop();
 }

@@ -35,6 +35,8 @@ def plot_results(plot, predictions_and_y, score, parameter, image_names=None):
     plot.set_ylabel(parameter)
     plot.grid()
 
+
+    # This section is used to add an image name to every point on the plot. Not recommended if there are a lot of points.
     # if image_names is not None:
     #     image_names = image_names[indexes_sorted_by_y]
     #     for i, name in enumerate(image_names):

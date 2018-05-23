@@ -159,7 +159,6 @@ class ParameterModel:
 	def predict_operation(self, image_dirs, model_to_load):
 		# For making a set of predictions from unlabeled data
 
-
 		print('Loading Data')
 		self.load_only_x(image_dirs)
 
